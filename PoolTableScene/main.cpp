@@ -116,6 +116,71 @@ void win_refresh (GLFWwindow *win) {
     glPopMatrix();
     //End Rack of Pool Balls
 
+
+    int x = 4;
+    int z = 4;
+    /* Table Top */
+    /* Front */
+    glBegin(GL_POLYGON);
+    glVertex3f( -6*x, -3, -7*z);       // P1
+    glVertex3f( -6*x,  0, -7*z);       // P2
+    glVertex3f(  6*x,  0, -7*z);       // P3
+    glVertex3f(  6*x, -3, -7*z);       // P4
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f( 1.0, 0.0, 0.0 );     glVertex3f(  6*x, -3, -7*z );      // P1 is red
+    glColor3f( 1.0, 0.0, 0.0 );     glVertex3f(  6*x,  0, -7*z );      // P2 is green
+    glColor3f( 1.0, 0.0, 0.0 );     glVertex3f( -6*x,  0, -7*z );      // P3 is blue
+    glColor3f( 1.0, 0.0, 0.0 );     glVertex3f( -6*x, -3, -7*z );      // P4 is purple
+    glEnd();
+
+    // White side - BACK
+    glBegin(GL_POLYGON);
+    glColor3f(   1.0,  0.0, 0.0 );
+    glVertex3f(  6*x, -3, 10*z );
+    glVertex3f(  6*x,  0, 10*z );
+    glVertex3f( -6*x,  0, 10*z );
+    glVertex3f( -6*x, -3, 10*z );
+    glEnd();
+
+// Purple side - RIGHT
+    glBegin(GL_POLYGON);
+    glColor3f(  1.0,  0.0,  0.0 );
+    glVertex3f( 6*x, -3, -7*z );
+    glVertex3f( 6*x,  0, -7 *z);
+    glVertex3f( 6*x,  0,  10*z );
+    glVertex3f( 6*x, -3,  10*z );
+    glEnd();
+
+// Green side - LEFT
+    glBegin(GL_POLYGON);
+    glColor3f(   1.0,  0.0,  0.0 );
+    glVertex3f( -6*x, -3,  10*z );
+    glVertex3f( -6*x,  0,  10*z );
+    glVertex3f( -6*x,  0, -7 *z);
+    glVertex3f( -6*x, -3, -7*z );
+    glEnd();
+
+// Blue side - TOP
+    glBegin(GL_POLYGON);
+    glColor3f(   1.0,  0.0,  0.0 );
+    glVertex3f(  6*x,  0,  10*z );
+    glVertex3f(  6*x,  0, -7*z );
+    glVertex3f( -6*x,  0, -7*z );
+    glVertex3f( -6*x,  0,  10*z );
+    glEnd();
+
+// Red side - BOTTOM
+    glBegin(GL_POLYGON);
+    glColor3f(   1.0,  0.0,  0.0 );
+    glVertex3f(  6*x, -3, -7 *z);
+    glVertex3f(  6*x, -3,  10*z);
+    glVertex3f( -6*x, -3,  10*z );
+    glVertex3f( -6*x, -3, -7*z);
+    glEnd();
+    glFlush();
+
     /* must swap buffer at the end of render function */
     glfwSwapBuffers(win);
 }
@@ -232,7 +297,7 @@ void init_gl() {
     glLineWidth(3.0);
 
     /* place the camera at Z=+5 (notice that the sign is OPPOSITE!) */
-    camera_cf *= glm::translate(glm::vec3{0, 0, -20});
+    camera_cf *= glm::translate(glm::vec3{0, -10, -100});
 }
 
 void make_model() {
