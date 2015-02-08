@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-project(sample)
+project(PoolTableScene)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "E:/Projects/OpenGLPoolTable/PoolTableScene/build/")
 
@@ -26,13 +26,13 @@ if (APPLE)
 endif (APPLE)
 
 set(SOURCE_FILES main.cpp Sphere.cpp HexNut.cpp)
-add_executable(sample ${SOURCE_FILES})
-  target_link_libraries (sample ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES} ${COCOA_LIBRARY}
+add_executable(PoolTableScene ${SOURCE_FILES})
+  target_link_libraries (PoolTableScene ${GLFW3_LIBRARY} ${OPENGL_LIBRARIES} ${COCOA_LIBRARY}
      ${COREVID_LIBRARY} ${IOKIT_LIBRARY} ${GLEW_LIBRARY})
 if (WIN32)
-  target_link_libraries (sample ${OPENGL_LIBRARIES} glfw3 glew32s glu32 opengl32)
+  target_link_libraries (PoolTableScene ${OPENGL_LIBRARIES} glfw3 glew32s glu32 opengl32)
 endif (WIN32)
 
 if (UNIX)
-  target_link_libraries (sample ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
+  target_link_libraries (PoolTableScene ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY} ${GLEW_LIBRARY})
 endif (UNIX)
