@@ -46,7 +46,8 @@ public:
         build_complete = true;
     }
 
-    virtual void build(void *data) = 0;
+    //virtual void build(void *data) = 0;
+    virtual void build(int level, float r, float g, float b) = 0;
 
     virtual void render(bool draw_outline) const {
         if (!build_complete) {

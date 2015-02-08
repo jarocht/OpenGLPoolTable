@@ -21,10 +21,13 @@
 #include "HexNut.h"
 #undef GLFW_DLL
 #include <GLFW/glfw3.h>
+#include <vector>
 
 using namespace std;
 
+Sphere *Balls[15];
 Sphere one;
+
 //HexNut two;
 void init_model();
 void win_refresh(GLFWwindow*);
@@ -33,22 +36,6 @@ int screen_ctr_x, screen_ctr_y;
 bool show_wire_frame;
 
 glm::mat4 camera_cf; // {glm::translate(glm::mat4(1.0f), glm::vec3{0,0,-5})};
-glm::mat4 b1_cf; //Ball #1 C-Frame
-glm::mat4 b2_cf;
-glm::mat4 b3_cf;
-glm::mat4 b4_cf;
-glm::mat4 b5_cf;
-glm::mat4 b6_cf;
-glm::mat4 b7_cf;
-glm::mat4 b8_cf;
-glm::mat4 b9_cf;
-glm::mat4 b10_cf;
-glm::mat4 b11_cf;
-glm::mat4 b12_cf;
-glm::mat4 b13_cf;
-glm::mat4 b14_cf;
-glm::mat4 b15_cf; //Ball #15 C-Frame
-
 
 void err_function (int what, const char *msg) {
     cerr << what << " " << msg << endl;
@@ -102,19 +89,27 @@ void win_refresh (GLFWwindow *win) {
     glEnd();
 
     //Rack of Pool Balls
-    float d = one.radius() * 2;
+    int ballNum = 0;
+    //float d = one.radius() * 2;
+    float d = Balls[0]->radius() * 2;
     glPushMatrix();
     glTranslatef(0, d / 2, 0); //Set on top of X-Z Plane, DO NOT TRANSLATE Y anymore
-    one.render(show_wire_frame);  /* true: super impose the polygon outline */
+    //one.render(show_wire_frame);  /* true: super impose the polygon outline */
+    Balls[ballNum]->render(show_wire_frame);
+    ballNum++;
     for (int i = 2; i < 6; i++)
     {
         glTranslatef(sin(PI/6) * d, 0, -cos(PI/6) * d); //Row Two
-        one.render(show_wire_frame);
+        //one.render(show_wire_frame);
+        Balls[ballNum]->render(show_wire_frame);
+        ballNum++;
         glPushMatrix();
         for (int j = i - 1; j > 0; j--)
         {
             glTranslatef(-d, 0, 0);
-            one.render(show_wire_frame);
+            //one.render(show_wire_frame);
+            Balls[ballNum]->render(show_wire_frame);
+            ballNum++;
         }
         glPopMatrix();
     }
@@ -163,7 +158,8 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
             case GLFW_KEY_6:
                 /* rebuild the model at different level of detail */
                 int N = key - GLFW_KEY_0;
-                one.build((void *)&N);
+                //one.build((void *)&N);
+                //one.build(N, 0.5f, 1.0f, 0.0f);
                 break;
         }
     }
@@ -240,16 +236,42 @@ void init_gl() {
 }
 
 void make_model() {
+
+    float colors[15][3]  = {
+            {1.0, 1.0, 0.0}, //Yellow
+            {1.0, 1.0, 0.0},
+            {0.4, 1.0, 0.0}, //Green
+            {0.2, 0.2, 0.8}, //Blue
+            {0.0, 0.0, 0.0}, //Black
+            {0.4, 1.0, 0.0}, //Green
+            {0.2, 0.2, 0.8}, //Blue
+            {1.0, 0.0, 0.0}, //Red #1
+            {1.0, 0.0, 0.0}, //Red #1
+            {0.8, 0.4, 0.0}, //Orange
+            {0.8, 0.0, 0.2}, //Red #2
+            {0.8, 0.0, 0.2}, //Red #2
+            {0.6, 0.2, 0.8}, //Purple
+            {0.6, 0.2, 0.8}, //Purple
+            {0.8, 0.4, 0.0} //Orange
+    };
+
     int N = 4;
-    one.build ((void *)&N);
+    for (int i = 0; i < 15; i++)
+    {
+        Balls[i] = new Sphere;
+        Balls[i]->build(N, colors[i][0], colors[i][1], colors[i][2]);
+    }
+
+    //one.build(N, 0.5f, 1.0f, 0.0f);
+
+
+    //one.build((void *)&N);
     //two.build(nullptr);
 
     //hex1_cf = glm::rotate(30.0f, glm::vec3{0, 1, 0});   /* rotate 30 degs around Y-axis */
 }
 
 int main() {
-cout << "Hello" << endl;
-
     if(!glfwInit()) {
         cerr << "Can't initialize GLFW" << endl;
         glfwTerminate();

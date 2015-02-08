@@ -8,6 +8,11 @@ int Sphere::save_point_and_color (glm::vec3 p, glm::vec3 c) {
     return all_points.size() - 1;
 }
 
+int Sphere::save_point(glm::vec3 p) {
+    all_points.push_back(p);
+    return all_points.size() - 1;
+}
+
 void Sphere::divideTriangle (int a, int b, int c, int level) {
     if (level == 0) {
         all_index.push_back(a);
@@ -17,9 +22,9 @@ void Sphere::divideTriangle (int a, int b, int c, int level) {
     }
 
     /* interpolate the colors */
-    glm::vec3 cAB = 0.5f * (all_colors[a] + all_colors[b]);
-    glm::vec3 cAC = 0.5f * (all_colors[a] + all_colors[c]);
-    glm::vec3 cBC = 0.5f * (all_colors[b] + all_colors[c]);
+    //glm::vec3 cAB = 0.5f * (all_colors[a] + all_colors[b]);
+    //glm::vec3 cAC = 0.5f * (all_colors[a] + all_colors[c]);
+    //glm::vec3 cBC = 0.5f * (all_colors[b] + all_colors[c]);
 
     /* find the mid point of each triangle side */
     glm::vec3 AB = glm::normalize(0.5f * (all_points[a] + all_points[b]));
@@ -30,9 +35,15 @@ void Sphere::divideTriangle (int a, int b, int c, int level) {
     AB *= sphere_radius;
     AC *= sphere_radius;
     BC *= sphere_radius;
-    int ab = save_point_and_color(AB, cAB);
+    int ab = save_point_and_color(AB, all_colors[b]);
+    int ac = save_point_and_color(AC, all_colors[b]);
+    int bc = save_point_and_color(BC, all_colors[b]);
+    /*int ab = save_point_and_color(AB, cAB);
     int ac = save_point_and_color(AC, cAC);
-    int bc = save_point_and_color(BC, cBC);
+    int bc = save_point_and_color(BC, cBC);*/
+    //int ab = save_point(AB);
+    //int ac = save_point(AC);
+    //int bc = save_point(BC);
 
     /* be sure the order of these numbers makes a CCW face */
     divideTriangle(a, ab, ac, level - 1);
@@ -41,7 +52,7 @@ void Sphere::divideTriangle (int a, int b, int c, int level) {
     divideTriangle(ac, bc, c, level - 1);
 }
 
-void Sphere::init_model(int level) {
+void Sphere::init_model(int level, float r, float g, float b) {
     /* the following if statements are needed to avoid regenerating the buffers
        when the sphere is recreated at different recursion detail
      */
@@ -58,17 +69,21 @@ void Sphere::init_model(int level) {
        correctly so the three vertices each face of the tetrahedron are in
        CCW order
      */
-#if 1
+#if 0
     all_points.emplace_back(0, 1, 1 / sqrt(2));
     all_points.emplace_back(-1, 0, -1 / sqrt(2));
     all_points.emplace_back(0, -1, 1 / sqrt(2));
     all_points.emplace_back(+1, 0, -1 / sqrt(2));
 #endif
-#if 0
+#if 1
     all_points.emplace_back (1, 1, 1);
     all_points.emplace_back (-1, -1, 1);
     all_points.emplace_back (1, -1, -1);
     all_points.emplace_back (-1, 1, -1);
+    all_colors.emplace_back(r, g, b);
+    all_colors.emplace_back(r, g, b);
+    all_colors.emplace_back(r, g, b);
+    all_colors.emplace_back(r, g, b);
 #endif
 #if 0
     float r1 = static_cast<float>(sqrt(2.0/3.0));
@@ -80,10 +95,10 @@ void Sphere::init_model(int level) {
     all_points.emplace_back (r4, 0, -r2);
     all_points.emplace_back (-r3, +0.5, -r2);
 #endif
-    all_colors.emplace_back(1.0f, 1.0f, 1.0f);
+    /*all_colors.emplace_back(1.0f, 1.0f, 1.0f);
     all_colors.emplace_back(1.0f, 0.2f, 0.2f);
     all_colors.emplace_back(0.2f, 1.0f, 0.2f);
-    all_colors.emplace_back(0.2f, 0.2f, 1.0f);
+    all_colors.emplace_back(0.2f, 0.2f, 1.0f);*/
 
     sphere_radius = glm::l1Norm(all_points[0]);
     /* be sure the order of these numbers makes a CCW face */
@@ -133,9 +148,11 @@ void Sphere::init_model(int level) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Sphere::build(void *data) {
-    int lev = *((int *) data);
-    init_model(lev);
+void Sphere::build(int level, float r, float g, float b) {
+    //void Sphere::build(void *data) {
+    //int lev = *((int *) data);
+    //init_model(lev, 1.0f, 1.0f, 0.0f);
+    init_model(level, r, g, b);
 
     post_build(); /* must call post_build(), to allow actual rendering */
 }
