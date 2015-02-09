@@ -111,11 +111,11 @@ void PoolTable::build(float length, float breadth, float height, float clr1, flo
 
     indices.push_back(9);
 
-    for (int k = 0 ; k < 4; k++){
+    for (int k = 3 ; k > -1; k--){
         indices.push_back(k+4);
     }
 
-    indices.push_back(4);
+    indices.push_back(7);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
