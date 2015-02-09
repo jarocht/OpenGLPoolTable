@@ -20,14 +20,30 @@
 #include "Sphere.h"
 #include "PoolTable.h"
 #undef GLFW_DLL
-#include <GLFW/glfw3.h>
+#include </GLFW/include/glfw3.h>
+//#include <GLFW/glfw3.h>
 #include <vector>
+#include <glfw3.h>
 
 using namespace std;
 
 Sphere *Balls[15];
 //Sphere one;
 PoolTable poolTable;
+PoolTable leg1;
+PoolTable leg2;
+PoolTable leg3;
+PoolTable leg4;
+PoolTable side1;
+PoolTable side2;
+PoolTable side3;
+PoolTable side4;
+PoolTable pock1;
+PoolTable pock2;
+PoolTable pock3;
+PoolTable pock4;
+PoolTable pock5;
+PoolTable pock6;
 
 
 //HexNut two;
@@ -132,7 +148,125 @@ void win_refresh (GLFWwindow *win) {
     glPopMatrix();
     //End Rack of Pool Balls
 
+    //Cue ball
+    glPushMatrix();
+    glTranslatef(0, -2, 70);
+    renderBall(11, 11, 11);
+    glPopMatrix();
+
+    //PoolTable
+    glPushMatrix();
+    glRotatef(270, 1, 0, 0);
+    glTranslatef(0, -30, -1.5);
+    poolTable.build(80, 130, 5, 0, .5, 0);
     poolTable.render();
+    glPopMatrix();
+
+    //Leg 1
+    glPushMatrix();
+    glTranslatef(-35, -25, -30);
+    leg1.build(8, 50, 8, 2, .5,.1);
+    leg1.render();
+    glPopMatrix();
+
+    //Leg 2
+    glPushMatrix();
+    glTranslatef(35, -25, -30);
+    leg2.build(8, 50, 8,2, .5,.1);
+    leg2.render();
+    glPopMatrix();
+
+    //Leg 3
+    glPushMatrix();
+    glTranslatef(-35, -25, 90.5);
+    leg3.build(8, 50, 8, 2, .5,.1);
+    leg3.render();
+    glPopMatrix();
+
+    //Leg 4
+    glPushMatrix();
+    glTranslatef(35, -25, 90.5);
+    leg4.build(8, 50, 8, 2, .5,.1);
+    leg4.render();
+    glPopMatrix();
+
+    //Side 1
+    glPushMatrix();
+    glRotatef(270, 1, 0, 0);
+    glTranslatef(37, -30, 3);
+    side1.build(6, 130, 6, 0, .5, 1);
+    side1.render();
+    glPopMatrix();
+
+    //Side 2
+    glPushMatrix();
+    glRotatef(270, 1, 0, 0);
+    glTranslatef(-37, -30, 3);
+    side2.build(6, 130, 6, 0, .5, 1);
+    side2.render();
+    glPopMatrix();
+
+    //Side 3
+    glPushMatrix();
+    glRotatef(270, 1, 0, 0);
+    glTranslatef(0, -92, 3);
+    side3.build(80, 6, 6, 0, .5, 1);
+    side3.render();
+    glPopMatrix();
+
+    //Side 4
+    glPushMatrix();
+    glRotatef(270, 1, 0, 0);
+    glTranslatef(0, 32, 3);
+    side4.build(80, 6, 6, 0, .5, 1);
+    side4.render();
+    glPopMatrix();
+
+    //Pock 1
+    glPushMatrix();
+    glTranslatef(32, 0, -24);
+    pock1.build(6, 3, 6, 0, 0, 0);
+    pock1.render();
+    glPopMatrix();
+
+    //Pock 2
+    glPushMatrix();
+    glTranslatef(32, 0, 30);
+    pock2.build(6, 3, 6, 0, 0, 0);
+    pock2.render();
+    glPopMatrix();
+
+    //Pock 3
+    glPushMatrix();
+    glTranslatef(32, 0, 85);
+    pock3.build(6, 3, 6, 0, 0, 0);
+    pock3.render();
+    glPopMatrix();
+
+    //Pock 4
+    glPushMatrix();
+    glTranslatef(-32, 0, -24);
+    pock4.build(6, 3, 6, 0, 0, 0);
+    pock4.render();
+    glPopMatrix();
+
+    //Pock 5
+    glPushMatrix();
+    glTranslatef(-32, 0, 30);
+    pock5.build(6, 3, 6, 0, 0, 0);
+    pock5.render();
+    glPopMatrix();
+
+    //Pock 6
+    glPushMatrix();
+    glTranslatef(-32, 0, 85);
+    pock6.build(6, 3, 6, 0, 0, 0);
+    pock6.render();
+    glPopMatrix();
+
+
+
+
 
     /* must swap buffer at the end of render function */
     glfwSwapBuffers(win);
@@ -261,7 +395,7 @@ void init_gl() {
     glLineWidth(3.0);
 
     /* place the camera at Z=+5 (notice that the sign is OPPOSITE!) */
-    camera_cf *= glm::translate(glm::vec3{0, -10, -100});
+    camera_cf *= glm::translate(glm::vec3{0, -30, -200});
 }
 
 void make_model() {
@@ -291,7 +425,7 @@ void make_model() {
         Balls[i]->build(N, colors[i][0], colors[i][1], colors[i][2]);
     }
 
-    poolTable.build(20, 40, 1, 0.0, 1.0, 0);
+    //poolTable.build(20, 40, 1, 0.0, 1.0, 0);
     //one.build((void *)&N);
     //two.build(nullptr);
 
