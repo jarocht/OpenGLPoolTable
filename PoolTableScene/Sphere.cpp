@@ -8,11 +8,6 @@ int Sphere::save_point_and_color (glm::vec3 p, glm::vec3 c) {
     return all_points.size() - 1;
 }
 
-int Sphere::save_point(glm::vec3 p) {
-    all_points.push_back(p);
-    return all_points.size() - 1;
-}
-
 void Sphere::divideTriangle (int a, int b, int c, int level) {
     if (level == 0) {
         all_index.push_back(a);
@@ -65,17 +60,11 @@ void Sphere::init_model(int level, float r, float g, float b) {
     all_points.clear();
     all_colors.clear();
     all_index.clear();
+
     /* Make sure the order of the initial four vertices are specified
        correctly so the three vertices each face of the tetrahedron are in
        CCW order
      */
-#if 0
-    all_points.emplace_back(0, 1, 1 / sqrt(2));
-    all_points.emplace_back(-1, 0, -1 / sqrt(2));
-    all_points.emplace_back(0, -1, 1 / sqrt(2));
-    all_points.emplace_back(+1, 0, -1 / sqrt(2));
-#endif
-#if 1
     all_points.emplace_back (1, 1, 1);
     all_points.emplace_back (-1, -1, 1);
     all_points.emplace_back (1, -1, -1);
@@ -84,21 +73,6 @@ void Sphere::init_model(int level, float r, float g, float b) {
     all_colors.emplace_back(r, g, b);
     all_colors.emplace_back(r, g, b);
     all_colors.emplace_back(r, g, b);
-#endif
-#if 0
-    float r1 = static_cast<float>(sqrt(2.0/3.0));
-    float r2 = 1.0 / static_cast<float>(2.0 * sqrt(6.0));
-    float r3 = 1.0 / static_cast<float>(2.0 * sqrt(3.0));
-    float r4 = 1/ static_cast<float>(sqrt(3.0));
-    all_points.emplace_back (0, 0, r1 - r2);
-    all_points.emplace_back (-r3, -0.5, -r2);
-    all_points.emplace_back (r4, 0, -r2);
-    all_points.emplace_back (-r3, +0.5, -r2);
-#endif
-    /*all_colors.emplace_back(1.0f, 1.0f, 1.0f);
-    all_colors.emplace_back(1.0f, 0.2f, 0.2f);
-    all_colors.emplace_back(0.2f, 1.0f, 0.2f);
-    all_colors.emplace_back(0.2f, 0.2f, 1.0f);*/
 
     sphere_radius = glm::l1Norm(all_points[0]);
     /* be sure the order of these numbers makes a CCW face */

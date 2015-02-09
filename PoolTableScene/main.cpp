@@ -18,7 +18,7 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/io.hpp>
 #include "Sphere.h"
-#include "HexNut.h"
+#include "PoolTable.h"
 #undef GLFW_DLL
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -26,14 +26,18 @@
 using namespace std;
 
 Sphere *Balls[15];
-Sphere one;
+//Sphere one;
+PoolTable poolTable;
+
 
 //HexNut two;
 void init_model();
 void win_refresh(GLFWwindow*);
 float arc_ball_rad_square;
 int screen_ctr_x, screen_ctr_y;
+int selected_ball = -1;
 bool show_wire_frame;
+void renderBall(int selectedBall, int ballNum);
 
 glm::mat4 camera_cf; // {glm::translate(glm::mat4(1.0f), glm::vec3{0,0,-5})};
 
@@ -65,6 +69,21 @@ void win_resize (GLFWwindow * win, int width, int height)
      gluPerspective(60.0, static_cast<float> (width)/ static_cast<float> (height), 1, 1000);
 }
 
+void renderBall(int selectedBall, int ballNum, float dist)
+{
+    if (selectedBall == ballNum)
+    {
+        glPushMatrix();
+        glTranslatef(0, dist / 2, 0);
+        Balls[selectedBall]->render(show_wire_frame);
+        glPopMatrix();
+    }
+    else
+    {
+        Balls[selectedBall]->render(show_wire_frame);
+    }
+}
+
 void win_refresh (GLFWwindow *win) {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
@@ -74,7 +93,8 @@ void win_refresh (GLFWwindow *win) {
     /* place the camera using the camera coordinate frame */
     glMultMatrixf (glm::value_ptr(camera_cf));
 
-    const float& S = one.radius();
+    //const float& S = one.radius();
+    const float& S = Balls[0]->radius();
     /* draw the axes */
     glBegin(GL_LINES);
     glColor3ub (255, 0, 0);
@@ -90,31 +110,29 @@ void win_refresh (GLFWwindow *win) {
 
     //Rack of Pool Balls
     int ballNum = 0;
-    //float d = one.radius() * 2;
     float d = Balls[0]->radius() * 2;
     glPushMatrix();
     glTranslatef(0, d / 2, 0); //Set on top of X-Z Plane, DO NOT TRANSLATE Y anymore
-    //one.render(show_wire_frame);  /* true: super impose the polygon outline */
-    Balls[ballNum]->render(show_wire_frame);
+    renderBall(ballNum, selected_ball, d);
     ballNum++;
     for (int i = 2; i < 6; i++)
     {
-        glTranslatef(sin(PI/6) * d, 0, -cos(PI/6) * d); //Row Two
-        //one.render(show_wire_frame);
-        Balls[ballNum]->render(show_wire_frame);
+        glTranslatef(sin(PI/6) * d, 0, -cos(PI/6) * d); //Row Increment
+        renderBall(ballNum, selected_ball, d);
         ballNum++;
         glPushMatrix();
         for (int j = i - 1; j > 0; j--)
         {
             glTranslatef(-d, 0, 0);
-            //one.render(show_wire_frame);
-            Balls[ballNum]->render(show_wire_frame);
+            renderBall(ballNum, selected_ball, d);
             ballNum++;
         }
         glPopMatrix();
     }
     glPopMatrix();
     //End Rack of Pool Balls
+
+    poolTable.render();
 
     /* must swap buffer at the end of render function */
     glfwSwapBuffers(win);
@@ -123,8 +141,8 @@ void win_refresh (GLFWwindow *win) {
 /* action: GLFW_PRESS, GLFW_RELEASE, or GLFW_REPEAT */
 void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
 {
-    cout << __FUNCTION__ << endl;
-    if (action != GLFW_PRESS) return;
+    if (action == 0) return;
+
     if (mods == GLFW_MOD_SHIFT) {
         switch (key) {
             case GLFW_KEY_D: /* Uppercase 'D' */
@@ -135,8 +153,18 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
     }
     else {
         switch (key) {
+            case GLFW_KEY_COMMA:
+                selected_ball--;
+                if (selected_ball == -2)
+                    selected_ball = 14;
+                break;
+            case GLFW_KEY_PERIOD:
+                selected_ball++;
+                if (selected_ball == 15)
+                    selected_ball = -1;
+                break;
             case GLFW_KEY_W:
-                    show_wire_frame = show_wire_frame ? false : true;
+                    show_wire_frame = !show_wire_frame;
                 break;
             case GLFW_KEY_D: /* lowercase 'd' */
                 /* pre mult: trans  Z-ax of the world */
@@ -151,15 +179,16 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
                 break;
             case GLFW_KEY_0:
             case GLFW_KEY_1:
+                //Camera pos 1 -Default
+                break;
             case GLFW_KEY_2:
+                //Camera pos 2
+                break;
             case GLFW_KEY_3:
+                //Camera pos 3
+                break;
             case GLFW_KEY_4:
-            case GLFW_KEY_5:
-            case GLFW_KEY_6:
-                /* rebuild the model at different level of detail */
-                int N = key - GLFW_KEY_0;
-                //one.build((void *)&N);
-                //one.build(N, 0.5f, 1.0f, 0.0f);
+                //Camera pos 4
                 break;
         }
     }
@@ -232,7 +261,7 @@ void init_gl() {
     glLineWidth(3.0);
 
     /* place the camera at Z=+5 (notice that the sign is OPPOSITE!) */
-    camera_cf *= glm::translate(glm::vec3{0, 0, -20});
+    camera_cf *= glm::translate(glm::vec3{0, -10, -100});
 }
 
 void make_model() {
@@ -262,9 +291,7 @@ void make_model() {
         Balls[i]->build(N, colors[i][0], colors[i][1], colors[i][2]);
     }
 
-    //one.build(N, 0.5f, 1.0f, 0.0f);
-
-
+    poolTable.build(20, 40, 1, 0.0, 1.0, 0);
     //one.build((void *)&N);
     //two.build(nullptr);
 
