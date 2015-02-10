@@ -19,6 +19,7 @@
 #include <glm/gtx/io.hpp>
 #include "Sphere.h"
 #include "PoolTable.h"
+#include "TCone.h"
 #undef GLFW_DLL
 #include </GLFW/include/glfw3.h>
 //#include <GLFW/glfw3.h>
@@ -56,6 +57,8 @@ bool show_wire_frame;
 void renderBall(int selectedBall, int ballNum);
 
 glm::mat4 camera_cf; // {glm::translate(glm::mat4(1.0f), glm::vec3{0,0,-5})};
+glm::mat4 cueball_cf; // Trying out the cf
+
 
 void err_function (int what, const char *msg) {
     cerr << what << " " << msg << endl;
@@ -151,6 +154,7 @@ void win_refresh (GLFWwindow *win) {
     //Cue ball
     glPushMatrix();
     glTranslatef(0, -2, 70);
+    glMultMatrixf(glm::value_ptr(cueball_cf));
     renderBall(11, 11, 11);
     glPopMatrix();
 
@@ -298,7 +302,9 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
                     selected_ball = -1;
                 break;
             case GLFW_KEY_W:
-                    show_wire_frame = !show_wire_frame;
+                //Move Cueball forward
+                cueball_cf = cueball_cf * glm::translate(glm::vec3(0, 0, -1.5f));
+                   // show_wire_frame = !show_wire_frame;
                 break;
             case GLFW_KEY_D: /* lowercase 'd' */
                 /* pre mult: trans  Z-ax of the world */
@@ -311,6 +317,11 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
             case GLFW_KEY_ESCAPE:
                 glfwSetWindowShouldClose(win, true);
                 break;
+            // For some reason when I add the decrease scale with X, S stops working.
+            case GLFW_KEY_S:
+                cueball_cf = cueball_cf*glm::scale(glm::vec3{2.0f,2.0f,2.0f});
+            case GLFW_KEY_X:
+               // cueball_cf = cueball_cf*glm::scale(glm::vec3{0.5f,0.5f,0.5f});
             case GLFW_KEY_0:
             case GLFW_KEY_1:
                 //Camera pos 1 -Default
