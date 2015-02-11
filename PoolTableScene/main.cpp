@@ -19,16 +19,16 @@
 #include <glm/gtx/io.hpp>
 #include "Sphere.h"
 #include "PoolTable.h"
-#include "TCone.h"
+//#include "TCone.h"
 #undef GLFW_DLL
-#include </GLFW/include/glfw3.h>
-//#include <GLFW/glfw3.h>
+//#include </GLFW/include/glfw3.h>
+#include <GLFW/glfw3.h>
 #include <vector>
-#include <glfw3.h>
+//#include <glfw3.h>
 
 using namespace std;
 
-Sphere *Balls[15];
+Sphere *Balls[16];
 //Sphere one;
 PoolTable poolTable;
 PoolTable leg1;
@@ -56,7 +56,7 @@ int selected_ball = -1;
 bool show_wire_frame;
 void renderBall(int selectedBall, int ballNum);
 
-glm::mat4 camera_cf; // {glm::translate(glm::mat4(1.0f), glm::vec3{0,0,-5})};
+glm::mat4 camera_cf;
 glm::mat4 cueball_cf; // Trying out the cf
 
 
@@ -134,6 +134,7 @@ void win_refresh (GLFWwindow *win) {
     glTranslatef(0, d / 2, 0); //Set on top of X-Z Plane, DO NOT TRANSLATE Y anymore
     renderBall(ballNum, selected_ball, d);
     ballNum++;
+    glPushMatrix();
     for (int i = 2; i < 6; i++)
     {
         glTranslatef(sin(PI/6) * d, 0, -cos(PI/6) * d); //Row Increment
@@ -149,14 +150,17 @@ void win_refresh (GLFWwindow *win) {
         glPopMatrix();
     }
     glPopMatrix();
-    //End Rack of Pool Balls
 
     //Cue ball
     glPushMatrix();
-    glTranslatef(0, -2, 70);
+    glTranslatef(0, 0, 70);
     glMultMatrixf(glm::value_ptr(cueball_cf));
-    renderBall(11, 11, 11);
+    renderBall(ballNum, selected_ball, 15);
     glPopMatrix();
+
+    glPopMatrix();
+    //End Rack of Pool Balls
+
 
     //PoolTable
     glPushMatrix();
@@ -268,10 +272,6 @@ void win_refresh (GLFWwindow *win) {
     pock6.render();
     glPopMatrix();
 
-
-
-
-
     /* must swap buffer at the end of render function */
     glfwSwapBuffers(win);
 }
@@ -283,10 +283,6 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
 
     if (mods == GLFW_MOD_SHIFT) {
         switch (key) {
-            case GLFW_KEY_D: /* Uppercase 'D' */
-                /* pre mult: trans  Z-ax of the world */
-                //hex1_cf = glm::translate(glm::vec3{0, +0.5f, 0}) * hex1_cf;
-                break;
         }
     }
     else {
@@ -294,46 +290,61 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
             case GLFW_KEY_COMMA:
                 selected_ball--;
                 if (selected_ball == -2)
-                    selected_ball = 14;
+                    selected_ball = 15;
                 break;
             case GLFW_KEY_PERIOD:
                 selected_ball++;
-                if (selected_ball == 15)
+                if (selected_ball == 16)
                     selected_ball = -1;
                 break;
             case GLFW_KEY_W:
-                //Move Cueball forward
+                show_wire_frame = !show_wire_frame;
+                break;
+            case GLFW_KEY_LEFT:
+                cueball_cf = cueball_cf * glm::translate(glm::vec3(-1.5F, 0, 0));
+                break;
+            case GLFW_KEY_RIGHT:
+                cueball_cf = cueball_cf * glm::translate(glm::vec3(1.5F, 0, 0));
+                break;
+            case GLFW_KEY_UP:
                 cueball_cf = cueball_cf * glm::translate(glm::vec3(0, 0, -1.5f));
-                   // show_wire_frame = !show_wire_frame;
                 break;
-            case GLFW_KEY_D: /* lowercase 'd' */
-                /* pre mult: trans  Z-ax of the world */
-                //hex1_cf = glm::translate(glm::vec3{0, -0.5f, 0}) * hex1_cf;
-                break;
-            case GLFW_KEY_MINUS:
-                /* post mult: rotate around Z-ax of the hex nut */
-                //hex1_cf = hex1_cf * glm::rotate(1.0f, glm::vec3{0, 0, 1});
+            case GLFW_KEY_DOWN:
+                cueball_cf = cueball_cf * glm::translate(glm::vec3(0, 0, 1.5f));
                 break;
             case GLFW_KEY_ESCAPE:
                 glfwSetWindowShouldClose(win, true);
                 break;
-            // For some reason when I add the decrease scale with X, S stops working.
-            case GLFW_KEY_S:
+            case GLFW_KEY_EQUAL:
                 cueball_cf = cueball_cf*glm::scale(glm::vec3{2.0f,2.0f,2.0f});
-            case GLFW_KEY_X:
-               // cueball_cf = cueball_cf*glm::scale(glm::vec3{0.5f,0.5f,0.5f});
-            case GLFW_KEY_0:
+                break;
+            case GLFW_KEY_MINUS:
+                cueball_cf = cueball_cf*glm::scale(glm::vec3{.5f,.5f,.5f});
+                break;
+            case GLFW_KEY_GRAVE_ACCENT:
+                //Reset Camera
+                camera_cf = glm::mat4();
+                camera_cf *= glm::translate(glm::vec3{0, -30, -200});
+                break;
             case GLFW_KEY_1:
                 //Camera pos 1 -Default
+                camera_cf = glm::mat4();
+                camera_cf *= glm::translate(glm::vec3{0, -30, -200});
+                camera_cf *= glm::rotate(0.25f, glm::vec3(1, 0, 0));
                 break;
             case GLFW_KEY_2:
                 //Camera pos 2
+                camera_cf = glm::mat4();
+                camera_cf *= glm::translate(glm::vec3{-30, 0, -200});
+                camera_cf *= glm::rotate(0.75f, glm::vec3(1, 0, 0));
+                camera_cf *= glm::rotate(1.0f, glm::vec3(0, 1, 0));
                 break;
             case GLFW_KEY_3:
                 //Camera pos 3
-                break;
-            case GLFW_KEY_4:
-                //Camera pos 4
+                camera_cf = glm::mat4();
+                camera_cf *= glm::translate(glm::vec3{-30, 0, -200});
+                camera_cf *= glm::rotate(0.75f, glm::vec3(1, 0, 0));
+                camera_cf *= glm::rotate(-1.0f, glm::vec3(0, 1, 0));
                 break;
         }
     }
@@ -411,7 +422,7 @@ void init_gl() {
 
 void make_model() {
 
-    float colors[15][3]  = {
+    float colors[16][3]  = {
             {1.0, 1.0, 0.0}, //Yellow
             {1.0, 1.0, 0.0},
             {0.4, 1.0, 0.0}, //Green
@@ -426,11 +437,12 @@ void make_model() {
             {0.8, 0.0, 0.2}, //Red #2
             {0.6, 0.2, 0.8}, //Purple
             {0.6, 0.2, 0.8}, //Purple
-            {0.8, 0.4, 0.0} //Orange
+            {0.8, 0.4, 0.0}, //Orange
+            {1.0, 1.0, 1.0} //White
     };
 
     int N = 4;
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 16; i++)
     {
         Balls[i] = new Sphere;
         Balls[i]->build(N, colors[i][0], colors[i][1], colors[i][2]);
@@ -495,3 +507,8 @@ int main() {
     glfwTerminate();
     return 0;
 }
+
+/*
+/* pre mult: trans  Z-ax of the world */
+//hex1_cf = glm::translate(glm::vec3{0, -0.5f, 0}) * hex1_cf;
+//hex1_cf = hex1_cf * glm::rotate(1.0f, glm::vec3{0, 0, 1}); */
