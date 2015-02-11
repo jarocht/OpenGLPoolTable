@@ -161,7 +161,8 @@ void win_refresh (GLFWwindow *win) {
     glPopMatrix();
     //End Rack of Pool Balls
 
-
+    //Adjust height of pool table components...
+    glTranslatef(0, -1, 0);
     //PoolTable
     glPushMatrix();
     glRotatef(270, 1, 0, 0);
@@ -321,25 +322,25 @@ void key_handler (GLFWwindow *win, int key, int scan_code, int action, int mods)
             case GLFW_KEY_MINUS:
                 cueball_cf = cueball_cf*glm::scale(glm::vec3{.5f,.5f,.5f});
                 break;
-            case GLFW_KEY_GRAVE_ACCENT:
+            case GLFW_KEY_1:
                 //Reset Camera
                 camera_cf = glm::mat4();
                 camera_cf *= glm::translate(glm::vec3{0, -30, -200});
                 break;
-            case GLFW_KEY_1:
-                //Camera pos 1 -Default
+            case GLFW_KEY_2:
+                //Camera pos 1
                 camera_cf = glm::mat4();
                 camera_cf *= glm::translate(glm::vec3{0, -30, -200});
                 camera_cf *= glm::rotate(0.25f, glm::vec3(1, 0, 0));
                 break;
-            case GLFW_KEY_2:
+            case GLFW_KEY_3:
                 //Camera pos 2
                 camera_cf = glm::mat4();
                 camera_cf *= glm::translate(glm::vec3{-30, 0, -200});
                 camera_cf *= glm::rotate(0.75f, glm::vec3(1, 0, 0));
                 camera_cf *= glm::rotate(1.0f, glm::vec3(0, 1, 0));
                 break;
-            case GLFW_KEY_3:
+            case GLFW_KEY_4:
                 //Camera pos 3
                 camera_cf = glm::mat4();
                 camera_cf *= glm::translate(glm::vec3{-30, 0, -200});
